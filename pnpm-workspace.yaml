@@ -1,0 +1,7 @@
+# pnpm 11 stores dependency build approvals here. This is NOT a monorepo:
+# the single app lives at the repo root.
+onlyBuiltDependencies:
+  - esbuild
+  - "@biomejs/biome"
+allowBuilds:
+  esbuild: true
