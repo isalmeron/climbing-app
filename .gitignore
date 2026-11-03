@@ -13,3 +13,9 @@ next-env.d.ts
 .vercel
 
 build-scripts/
+
+# AWS console downloads — NEVER commit
+*-[aA]ccessKeys.csv
+*_[aA]ccessKeys.csv
+*:Zone.Identifier
+*.pem

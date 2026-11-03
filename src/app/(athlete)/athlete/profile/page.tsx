@@ -30,13 +30,7 @@ export default async function ProfilePage() {
       <Paper withBorder p="md" radius="md">
         <form action={updateProfile}>
           <Stack gap="sm">
-            <TextInput
-              name="name"
-              label="Nombre"
-              defaultValue={row?.name ?? ""}
-              required
-              size="md"
-            />
+            <TextInput name="name" label="Nombre" defaultValue={row?.name ?? ""} required size="md" />
             <TextInput
               name="birthdate"
               label="Fecha de nacimiento"
@@ -51,12 +45,7 @@ export default async function ProfilePage() {
               decimalScale={1}
               size="md"
             />
-            <NumberInput
-              name="heightCm"
-              label="Altura (cm)"
-              defaultValue={row?.heightCm ?? undefined}
-              size="md"
-            />
+            <NumberInput name="heightCm" label="Altura (cm)" defaultValue={row?.heightCm ?? undefined} size="md" />
             <Textarea name="notes" label="Notas" defaultValue={row?.notes ?? ""} minRows={3} />
             <Button type="submit" size="md">
               Guardar

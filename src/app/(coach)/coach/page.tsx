@@ -1,7 +1,7 @@
 import { Badge, Button, Card, Divider, Group, Paper, Stack, Text, Title } from "@mantine/core";
 import { and, eq, isNull } from "drizzle-orm";
-import Link from "next/link";
 import { createInviteLinkForm } from "@/actions/invite";
+import { LinkButton } from "@/components/link-button";
 import { db } from "@/db";
 import { athleteCoach, planAssignments, trainingPlans, users } from "@/db/schema";
 import { requireRole } from "@/lib/session";
@@ -20,10 +20,7 @@ export default async function CoachHome() {
     .innerJoin(users, eq(users.id, athleteCoach.athleteId))
     .leftJoin(
       planAssignments,
-      and(
-        eq(planAssignments.athleteId, athleteCoach.athleteId),
-        isNull(planAssignments.archivedAt),
-      ),
+      and(eq(planAssignments.athleteId, athleteCoach.athleteId), isNull(planAssignments.archivedAt)),
     )
     .leftJoin(trainingPlans, eq(trainingPlans.id, planAssignments.planId))
     .where(eq(athleteCoach.coachId, coach.id));
@@ -105,9 +102,9 @@ export default async function CoachHome() {
         </Stack>
       )}
 
-      <Button component={Link} href="/coach/exercises" variant="light" size="md">
+      <LinkButton href="/coach/exercises" variant="light" size="md">
         Mis ejercicios y borradores
-      </Button>
+      </LinkButton>
     </Stack>
   );
 }

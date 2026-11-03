@@ -10,8 +10,7 @@ import * as schema from "./schema";
  * A missing DATABASE_URL yields a placeholder that fails loudly on first query
  * instead of crashing every page module at build time.
  */
-const url =
-  process.env.DATABASE_URL ?? "postgres://missing-env-set-DATABASE_URL@127.0.0.1:5432/missing";
+const url = process.env.DATABASE_URL ?? "postgres://missing-env-set-DATABASE_URL@127.0.0.1:5432/missing";
 
 const globalForDb = globalThis as unknown as { __climbSql?: ReturnType<typeof postgres> };
 const client = globalForDb.__climbSql ?? postgres(url, { max: 10 });

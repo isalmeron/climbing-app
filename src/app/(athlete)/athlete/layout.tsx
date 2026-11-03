@@ -1,6 +1,6 @@
 import { AppShell, Button, Container, Group, Text } from "@mantine/core";
-import Link from "next/link";
 import { logout } from "@/actions/auth";
+import { LinkButton } from "@/components/link-button";
 import { requireRole } from "@/lib/session";
 
 export default async function AthleteLayout({ children }: { children: React.ReactNode }) {
@@ -15,9 +15,9 @@ export default async function AthleteLayout({ children }: { children: React.Reac
               {athlete.name ?? "Mi entrenamiento"}
             </Text>
             <Group gap="xs" wrap="nowrap">
-              <Button component={Link} href="/athlete/profile" variant="subtle" size="compact-sm">
+              <LinkButton href="/athlete/profile" variant="subtle" size="compact-sm">
                 Perfil
-              </Button>
+              </LinkButton>
               <form action={logout}>
                 <Button type="submit" variant="subtle" size="compact-sm" color="gray">
                   Salir

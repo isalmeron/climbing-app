@@ -1,6 +1,6 @@
 import { AppShell, Button, Container, Group, Text } from "@mantine/core";
-import Link from "next/link";
 import { logout } from "@/actions/auth";
+import { LinkButton } from "@/components/link-button";
 import { requireRole } from "@/lib/session";
 
 export default async function CoachLayout({ children }: { children: React.ReactNode }) {
@@ -18,9 +18,9 @@ export default async function CoachLayout({ children }: { children: React.ReactN
               </Text>
             </Group>
             <Group gap="xs" wrap="nowrap">
-              <Button component={Link} href="/coach" variant="subtle" size="compact-sm">
+              <LinkButton href="/coach" variant="subtle" size="compact-sm">
                 Inicio
-              </Button>
+              </LinkButton>
               <form action={logout}>
                 <Button type="submit" variant="subtle" size="compact-sm" color="gray">
                   Salir

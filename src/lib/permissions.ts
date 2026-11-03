@@ -19,10 +19,7 @@ export function canCurateCatalog(role: Role): boolean {
 }
 
 /** Drafts belong to their author until accepted (ADR 0003). */
-export function canEditExercise(
-  exercise: ExerciseLike,
-  actor: { id: string; role: Role },
-): boolean {
+export function canEditExercise(exercise: ExerciseLike, actor: { id: string; role: Role }): boolean {
   if (actor.role === "admin") return true;
   if (exercise.status === "accepted") return false;
   return actor.role === "coach" && exercise.authorCoachId === actor.id;
@@ -33,10 +30,7 @@ export function canReviewDrafts(role: Role): boolean {
   return role === "admin";
 }
 
-export function canManagePlan(
-  plan: { coachId: string },
-  actor: { id: string; role: Role },
-): boolean {
+export function canManagePlan(plan: { coachId: string }, actor: { id: string; role: Role }): boolean {
   return actor.role === "admin" || (actor.role === "coach" && plan.coachId === actor.id);
 }
 
@@ -59,17 +53,11 @@ export function canViewAthlete(
   return athlete.id === actor.id;
 }
 
-export function canTransferAthlete(
-  athlete: { coachId: string | null },
-  actor: { id: string; role: Role },
-): boolean {
+export function canTransferAthlete(athlete: { coachId: string | null }, actor: { id: string; role: Role }): boolean {
   return actor.role === "admin" || (actor.role === "coach" && athlete.coachId === actor.id);
 }
 
 /** Completion only, and only for the athlete the plan was assigned to. */
-export function canCompleteSession(
-  sessionAthleteId: string,
-  actor: { id: string; role: Role },
-): boolean {
+export function canCompleteSession(sessionAthleteId: string, actor: { id: string; role: Role }): boolean {
   return actor.role === "athlete" && actor.id === sessionAthleteId;
 }

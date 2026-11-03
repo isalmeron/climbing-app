@@ -13,10 +13,7 @@ const acceptSchema = z.object({
 });
 
 /** The single quality gate: the admin accepts a draft into the global catalog. */
-export async function acceptDraft(
-  exerciseId: string,
-  patch: z.infer<typeof acceptSchema> = {},
-): Promise<void> {
+export async function acceptDraft(exerciseId: string, patch: z.infer<typeof acceptSchema> = {}): Promise<void> {
   const admin = await requireRoleAction("admin");
   const data = acceptSchema.parse(patch);
 

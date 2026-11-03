@@ -38,8 +38,7 @@ const tagId = (key: string) => tagRows.find((t) => t.key === key)?.id;
 const STARTER = [
   {
     name: "Repetidores en regleta",
-    description:
-      "7 segundos colgado + 3 de descanso, repetido 6 veces por serie. Trabaja resistencia de antebrazo.",
+    description: "7 segundos colgado + 3 de descanso, repetido 6 veces por serie. Trabaja resistencia de antebrazo.",
     tags: ["fingers", "forearm", "endurance"],
   },
   {
@@ -80,11 +79,7 @@ const STARTER = [
 ];
 
 for (const starter of STARTER) {
-  const [existing] = await db
-    .select()
-    .from(exercises)
-    .where(eq(exercises.name, starter.name))
-    .limit(1);
+  const [existing] = await db.select().from(exercises).where(eq(exercises.name, starter.name)).limit(1);
   if (existing) continue;
 
   const [created] = await db

@@ -46,10 +46,7 @@ export default async function AthleteHome() {
           .orderBy(asc(trainingSessions.position))
       : [];
 
-  const completed = await db
-    .select({ sessionId: logs.sessionId })
-    .from(logs)
-    .where(eq(logs.athleteId, athlete.id));
+  const completed = await db.select({ sessionId: logs.sessionId }).from(logs).where(eq(logs.athleteId, athlete.id));
   const done = new Set(completed.map((c) => c.sessionId));
 
   return (

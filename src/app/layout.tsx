@@ -1,8 +1,10 @@
+import { ColorSchemeScript, MantineProvider, mantineHtmlProps } from "@mantine/core";
 import "@mantine/core/styles.css";
-import "./globals.css";
-import { ColorSchemeScript } from "@mantine/core";
+import "@mantine/dates/styles.css";
+import "@mantine/notifications/styles.css";
 import type { Metadata, Viewport } from "next";
-import { Providers } from "./providers";
+import React from "react";
+import "./globals.css";
 
 export const metadata: Metadata = {
   title: "Climbing Training",
@@ -17,12 +19,14 @@ export const viewport: Viewport = {
 
 export default function RootLayout({ children }: { children: React.ReactNode }) {
   return (
-    <html lang="es">
+    <html lang="es" {...mantineHtmlProps}>
       <head>
-        <ColorSchemeScript defaultColorScheme="light" />
+        <React.Suspense fallback={null}>
+          <ColorSchemeScript />
+        </React.Suspense>
       </head>
       <body>
-        <Providers>{children}</Providers>
+        <MantineProvider>{children}</MantineProvider>
       </body>
     </html>
   );

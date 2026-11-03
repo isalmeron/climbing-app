@@ -11,21 +11,8 @@ export function CredentialsForm() {
     <form action={formAction}>
       <Stack gap="sm">
         {state?.error ? <Alert color="red">{state.error}</Alert> : null}
-        <TextInput
-          name="email"
-          label="Email"
-          type="email"
-          autoComplete="email"
-          required
-          size="md"
-        />
-        <PasswordInput
-          name="password"
-          label="Contraseña"
-          autoComplete="current-password"
-          required
-          size="md"
-        />
+        <TextInput name="email" label="Email" type="email" autoComplete="email" required size="md" />
+        <PasswordInput name="password" label="Contraseña" autoComplete="current-password" required size="md" />
         <Button type="submit" loading={pending} fullWidth size="md">
           Entrar
         </Button>

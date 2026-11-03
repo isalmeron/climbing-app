@@ -43,11 +43,7 @@ export const { handlers, auth, signIn, signOut } = NextAuth({
         const parsed = credentialsSchema.safeParse(raw);
         if (!parsed.success) return null;
 
-        const [user] = await db
-          .select()
-          .from(users)
-          .where(eq(users.email, parsed.data.email.toLowerCase()))
-          .limit(1);
+        const [user] = await db.select().from(users).where(eq(users.email, parsed.data.email.toLowerCase())).limit(1);
 
         if (!user?.passwordHash || user.deactivatedAt) return null;
 

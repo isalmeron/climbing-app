@@ -173,10 +173,7 @@ export const exerciseTags = pgTable(
       .notNull()
       .references(() => tags.id, { onDelete: "restrict" }),
   },
-  (t) => [
-    primaryKey({ columns: [t.exerciseId, t.tagId] }),
-    index("exercise_tags_tag_idx").on(t.tagId),
-  ],
+  (t) => [primaryKey({ columns: [t.exerciseId, t.tagId] }), index("exercise_tags_tag_idx").on(t.tagId)],
 );
 
 /* ------------------------------------------------------------------ */
@@ -265,9 +262,7 @@ export const planAssignments = pgTable(
     archivedAt: timestamp("archived_at", { withTimezone: true }),
   },
   (t) => [
-    uniqueIndex("plan_assignments_one_active_per_athlete")
-      .on(t.athleteId)
-      .where(sql`${t.archivedAt} is null`),
+    uniqueIndex("plan_assignments_one_active_per_athlete").on(t.athleteId).where(sql`${t.archivedAt} is null`),
     index("plan_assignments_athlete_idx").on(t.athleteId),
   ],
 );

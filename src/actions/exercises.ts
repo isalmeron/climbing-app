@@ -39,9 +39,7 @@ export async function createExerciseDraft(input: ExerciseInput): Promise<{ id: s
   if (!draft) throw new Error("No se pudo crear el borrador");
 
   if (data.tagIds.length > 0) {
-    await db
-      .insert(exerciseTags)
-      .values(data.tagIds.map((tagId) => ({ exerciseId: draft.id, tagId })));
+    await db.insert(exerciseTags).values(data.tagIds.map((tagId) => ({ exerciseId: draft.id, tagId })));
   }
   revalidatePath("/coach/exercises");
   return { id: draft.id };
@@ -85,8 +83,6 @@ export async function rejectDraft(exerciseId: string): Promise<void> {
   if (exercise?.status === "accepted") {
     throw new Error("Un ejercicio aceptado no se puede borrar");
   }
-  await db
-    .delete(exercises)
-    .where(and(eq(exercises.id, exerciseId), eq(exercises.status, "draft")));
+  await db.delete(exercises).where(and(eq(exercises.id, exerciseId), eq(exercises.status, "draft")));
   revalidatePath("/admin/exercises");
 }

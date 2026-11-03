@@ -4,14 +4,7 @@ import { and, eq, isNull } from "drizzle-orm";
 import { revalidatePath } from "next/cache";
 import { z } from "zod";
 import { db } from "@/db";
-import {
-  exercises,
-  planAssignments,
-  planWeeks,
-  sessionExercises,
-  trainingPlans,
-  trainingSessions,
-} from "@/db/schema";
+import { exercises, planAssignments, planWeeks, sessionExercises, trainingPlans, trainingSessions } from "@/db/schema";
 import { canDeletePlan, canManagePlan } from "@/lib/permissions";
 import { requireRoleAction } from "@/lib/session";
 
@@ -36,10 +29,7 @@ export async function archivePlan(planId: string): Promise<void> {
   const coach = await requireRoleAction("coach");
   const [plan] = await db.select().from(trainingPlans).where(eq(trainingPlans.id, planId));
   if (!plan || !canManagePlan(plan, coach)) throw new Error("No autorizado");
-  await db
-    .update(trainingPlans)
-    .set({ archivedAt: new Date() })
-    .where(eq(trainingPlans.id, planId));
+  await db.update(trainingPlans).set({ archivedAt: new Date() }).where(eq(trainingPlans.id, planId));
   revalidatePath("/coach/plans");
 }
 
@@ -73,13 +63,8 @@ export async function addWeek(planId: string): Promise<void> {
 
 export async function addSession(weekId: string, name?: string): Promise<void> {
   await requireRoleAction("coach");
-  const sessions = await db
-    .select()
-    .from(trainingSessions)
-    .where(eq(trainingSessions.weekId, weekId));
-  await db
-    .insert(trainingSessions)
-    .values({ weekId, position: sessions.length + 1, name: name ?? null });
+  const sessions = await db.select().from(trainingSessions).where(eq(trainingSessions.weekId, weekId));
+  await db.insert(trainingSessions).values({ weekId, position: sessions.length + 1, name: name ?? null });
 }
 
 export async function addExerciseToSession(input: {
@@ -94,10 +79,7 @@ export async function addExerciseToSession(input: {
   if (!exercise) throw new Error("El ejercicio no existe");
   if (exercise.status !== "accepted") throw new Error("Solo se pueden usar ejercicios aceptados");
 
-  const existing = await db
-    .select()
-    .from(sessionExercises)
-    .where(eq(sessionExercises.sessionId, input.sessionId));
+  const existing = await db.select().from(sessionExercises).where(eq(sessionExercises.sessionId, input.sessionId));
 
   await db.insert(sessionExercises).values({
     sessionId: input.sessionId,

@@ -17,10 +17,7 @@ const signupSchema = z.object({
 export type SignupState = { error?: string } | undefined;
 
 /** The only way an athlete joins: through a coach's single-use invite link. */
-export async function signUpWithInvite(
-  _prev: SignupState,
-  formData: FormData,
-): Promise<SignupState> {
+export async function signUpWithInvite(_prev: SignupState, formData: FormData): Promise<SignupState> {
   const parsed = signupSchema.safeParse({
     token: formData.get("token"),
     name: formData.get("name"),
@@ -68,10 +65,7 @@ export async function signUpWithInvite(
   return undefined;
 }
 
-export async function loginWithCredentials(
-  _prev: SignupState,
-  formData: FormData,
-): Promise<SignupState> {
+export async function loginWithCredentials(_prev: SignupState, formData: FormData): Promise<SignupState> {
   const email = String(formData.get("email") ?? "").toLowerCase();
   const password = String(formData.get("password") ?? "");
   try {

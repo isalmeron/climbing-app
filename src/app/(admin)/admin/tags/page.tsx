@@ -22,13 +22,7 @@ export default async function TagsPage() {
         <form action={createTagFromForm}>
           <Stack gap="sm">
             <TextInput name="key" label="Clave" placeholder="upper-body" required size="md" />
-            <TextInput
-              name="labelEs"
-              label="Etiqueta"
-              placeholder="Tren superior"
-              required
-              size="md"
-            />
+            <TextInput name="labelEs" label="Etiqueta" placeholder="Tren superior" required size="md" />
             <Button type="submit" size="md">
               Añadir etiqueta
             </Button>

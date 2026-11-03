@@ -1,6 +1,6 @@
 import { AppShell, Button, Container, Group, Text } from "@mantine/core";
-import Link from "next/link";
 import { logout } from "@/actions/auth";
+import { LinkButton } from "@/components/link-button";
 import { requireRole } from "@/lib/session";
 
 export default async function AdminLayout({ children }: { children: React.ReactNode }) {
@@ -13,12 +13,12 @@ export default async function AdminLayout({ children }: { children: React.ReactN
           <Group h="100%" justify="space-between" wrap="nowrap">
             <Group gap="xs">
               <Text fw={600}>Administración</Text>
-              <Button component={Link} href="/admin" variant="subtle" size="compact-sm">
+              <LinkButton href="/admin" variant="subtle" size="compact-sm">
                 Cola
-              </Button>
-              <Button component={Link} href="/admin/tags" variant="subtle" size="compact-sm">
+              </LinkButton>
+              <LinkButton href="/admin/tags" variant="subtle" size="compact-sm">
                 Etiquetas
-              </Button>
+              </LinkButton>
             </Group>
             <form action={logout}>
               <Button type="submit" variant="subtle" size="compact-sm" color="gray">
