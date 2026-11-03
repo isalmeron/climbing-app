@@ -1,4 +1,4 @@
-import { AppShell, Button, Container, Group, Text } from "@mantine/core";
+import { AppShell, AppShellHeader, AppShellMain, Button, Container, Group, Text } from "@mantine/core";
 import { logout } from "@/actions/auth";
 import { LinkButton } from "@/components/link-button";
 import { requireRole } from "@/lib/session";
@@ -8,7 +8,7 @@ export default async function AdminLayout({ children }: { children: React.ReactN
 
   return (
     <AppShell header={{ height: 56 }} padding="md">
-      <AppShell.Header>
+      <AppShellHeader>
         <Container h="100%" size="lg">
           <Group h="100%" justify="space-between" wrap="nowrap">
             <Group gap="xs">
@@ -27,10 +27,10 @@ export default async function AdminLayout({ children }: { children: React.ReactN
             </form>
           </Group>
         </Container>
-      </AppShell.Header>
-      <AppShell.Main>
+      </AppShellHeader>
+      <AppShellMain>
         <Container size="lg">{children}</Container>
-      </AppShell.Main>
+      </AppShellMain>
     </AppShell>
   );
 }
