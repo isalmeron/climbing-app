@@ -13,8 +13,8 @@
     "typecheck": "tsc --noEmit",
     "test": "vitest run",
     "db:generate": "drizzle-kit generate",
-    "db:migrate": "tsx scripts/migrate.ts",
-    "db:seed": "tsx scripts/seed.ts",
+    "db:migrate": "tsx --env-file-if-exists=.env scripts/migrate.ts",
+    "db:seed": "tsx --env-file-if-exists=.env scripts/seed.ts",
     "db:studio": "drizzle-kit studio",
     "build:scripts": "esbuild scripts/migrate.ts scripts/seed.ts --bundle --platform=node --format=esm --packages=external --tsconfig=tsconfig.json --outdir=build-scripts",
     "db:seed:prod": "node build-scripts/seed.js"
