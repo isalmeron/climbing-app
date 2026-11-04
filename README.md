@@ -62,7 +62,8 @@ Without AWS credentials the app still runs: mails print to stdout
 2. One application per environment built from this repo's `Dockerfile`:
    - **production** ← `main`
    - **staging** ← the staging branch
-3. Env vars per app from `.env.example`. Differences that matter:
+3. Env vars per app — the authoritative table with sources, secrets and
+   rotation notes is **[docs/ops/env.md](./docs/ops/env.md)**. Differences that matter:
    - `S3_PREFIX=prod/` vs `staging/`
    - `MAIL_TRANSPORT=ses` in production; `console` is fine for staging
    - `APP_URL` must match the public URL (invite links are absolute)

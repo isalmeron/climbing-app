@@ -18,8 +18,9 @@ const schema = z.object({
   AWS_ACCESS_KEY_ID: z.string().optional(),
   AWS_SECRET_ACCESS_KEY: z.string().optional(),
   S3_BUCKET: z.string().optional(),
-  /** `staging/` on the staging environment, `prod/` in production. */
-  S3_PREFIX: z.string().default("prod/"),
+  /** `dev/` locally, `staging/` on staging, `prod/` in production — no default:
+   *  a missing prefix must fail loudly rather than mix environments. */
+  S3_PREFIX: z.string().min(1),
 
   SES_FROM: z.string().email().optional(),
   /** Where invite/reset links point when running locally. */
