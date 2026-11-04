@@ -42,4 +42,6 @@ Local database: `docker compose up -d db`, then `pnpm db:migrate && pnpm db:seed
 - User-facing copy is Spanish. Tag vocabulary values are English keys with
   Spanish labels (`label_es`), rendered through `labelForTag`.
 - Migrations are generated and committed; never hand-edit `drizzle/` SQL.
-- When using compound components from Mantine (e.g. AppShell.XXX) always use the ComponentXXX form e.g. AppShell.Header would change to AppShellHeader
+- When using compound components from Mantine (e.g. AppShell.XXX) always use the
+  ComponentXXX form e.g. AppShell.Header would change to AppShellHeader.
+  `pnpm lint` enforces this via `scripts/check-no-compound-jsx.mjs`.
