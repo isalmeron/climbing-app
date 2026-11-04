@@ -11,6 +11,10 @@ climbing teamspace. Use the Notion MCP tools for every operation — there is no
 - Data source id: `a9d97991-9883-42db-9149-4b23a1638b96`
 - Database URL: https://app.notion.com/p/a1bdd9e9d16d4ba0a100d10c75e184d8
 - Statuses: `Not started` → `In progress` → `Done`
+- **Epic**: groups issues by purpose (the app itself is the project; epics are
+  its bodies of work). Known values: `Deployment`. Every new issue gets an
+  Epic; use the exact value — no variants of case or wording. (It is currently
+  a text property; if it becomes a Select, values carry over.)
 
 ## Conventions
 
