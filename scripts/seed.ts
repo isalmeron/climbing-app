@@ -22,7 +22,7 @@ await db
   .values({ email: adminEmail.toLowerCase(), firstName: "Admin", role: "admin", passwordHash })
   .onConflictDoUpdate({
     target: users.email,
-    set: { role: "admin", passwordHash },
+    set: { role: "admin", passwordHash, firstName: "Admin" },
   });
 
 for (const [index, tag] of TAG_VOCABULARY.entries()) {
