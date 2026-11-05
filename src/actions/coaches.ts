@@ -6,7 +6,7 @@ import { redirect } from "next/navigation";
 import { z } from "zod";
 import { db } from "@/db";
 import { coachSetupTokens, users } from "@/db/schema";
-import { signIn } from "@/lib/auth";
+import { signIn, unstable_update } from "@/lib/auth";
 import { coachSetupEmail, mailer } from "@/lib/mailer";
 import { requireRoleAction } from "@/lib/session";
 import { newInviteToken } from "@/lib/token";
@@ -126,13 +126,14 @@ export async function completeOnboarding(_prev: OnboardingState, formData: FormD
   });
   if (!parsed.success) return { error: "Revisa tus datos." };
 
-  await db
-    .update(users)
-    .set({
-      firstName: parsed.data.firstName.trim(),
-      lastName: parsed.data.lastName.trim(),
-    })
-    .where(eq(users.id, coach.id));
+  const firstName = parsed.data.firstName.trim();
+  const lastName = parsed.data.lastName.trim();
+
+  await db.update(users).set({ firstName, lastName }).where(eq(users.id, coach.id));
+
+  // The JWT carries the sign-in snapshot of the names; refresh it so the
+  // coach-layout guard sees the update immediately.
+  await unstable_update({ user: { firstName, lastName } });
 
   redirect("/coach");
 }

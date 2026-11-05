@@ -15,7 +15,7 @@ const credentialsSchema = z.object({
   password: z.string().min(8),
 });
 
-export const { handlers, auth, signIn, signOut } = NextAuth({
+export const { handlers, auth, signIn, signOut, unstable_update } = NextAuth({
   adapter: DrizzleAdapter(db, {
     usersTable: users,
     accountsTable: accounts,
@@ -63,7 +63,7 @@ export const { handlers, auth, signIn, signOut } = NextAuth({
     }),
   ],
   callbacks: {
-    async jwt({ token, user }) {
+    async jwt({ token, user, trigger, session }) {
       if (user?.id) {
         token.uid = user.id;
         token.role = (user as { role?: (typeof roleEnum.enumValues)[number] }).role ?? "athlete";
@@ -81,13 +81,24 @@ export const { handlers, auth, signIn, signOut } = NextAuth({
         token.firstName = names.firstName;
         token.lastName = names.lastName;
       }
+
+      // Server Actions mutate the user row; without this the JWT would keep
+      // its sign-in snapshot until the next login.
+      if (trigger === "update" && session) {
+        const patch = session as {
+          firstName?: string | null;
+          lastName?: string | null;
+        };
+        if (patch.firstName !== undefined) token.firstName = patch.firstName;
+        if (patch.lastName !== undefined) token.lastName = patch.lastName;
+      }
       return token;
     },
     async session({ session, token }) {
       if (token.uid) session.user.id = token.uid as string;
       if (token.role) session.user.role = token.role as typeof session.user.role;
-      if (token.firstName) session.user.firstName = token.firstName as string;
-      if (token.lastName) session.user.lastName = token.lastName as string;
+      session.user.firstName = (token.firstName as string | null | undefined) ?? null;
+      session.user.lastName = (token.lastName as string | null | undefined) ?? null;
       return session;
     },
   },
