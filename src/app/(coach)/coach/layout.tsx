@@ -1,10 +1,14 @@
 import { AppShell, AppShellHeader, AppShellMain, Button, Container, Group, Text } from "@mantine/core";
+import { redirect } from "next/navigation";
 import { logout } from "@/actions/auth";
 import { LinkButton } from "@/components/link-button";
+import { displayName } from "@/lib/name";
 import { requireRole } from "@/lib/session";
 
 export default async function CoachLayout({ children }: { children: React.ReactNode }) {
   const coach = await requireRole("coach");
+  // Mandatory onboarding: no coach home until first+last name are set.
+  if (!coach.firstName || !coach.lastName) redirect("/coach/onboarding");
 
   return (
     <AppShell header={{ height: 56 }} padding="md">
@@ -14,7 +18,7 @@ export default async function CoachLayout({ children }: { children: React.ReactN
             <Group gap="xs" wrap="nowrap">
               <Text fw={600}>Entrenador</Text>
               <Text size="sm" c="dimmed" visibleFrom="sm">
-                {coach.name ?? coach.email}
+                {displayName(coach)}
               </Text>
             </Group>
             <Group gap="xs" wrap="nowrap">

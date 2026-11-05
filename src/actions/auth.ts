@@ -9,7 +9,8 @@ import { signIn } from "@/lib/auth";
 
 const signupSchema = z.object({
   token: z.string().min(10),
-  name: z.string().min(2).max(120),
+  firstName: z.string().min(1).max(80),
+  lastName: z.string().min(1).max(80),
   email: z.string().email(),
   password: z.string().min(8).max(200),
 });
@@ -20,7 +21,8 @@ export type SignupState = { error?: string } | undefined;
 export async function signUpWithInvite(_prev: SignupState, formData: FormData): Promise<SignupState> {
   const parsed = signupSchema.safeParse({
     token: formData.get("token"),
-    name: formData.get("name"),
+    firstName: formData.get("firstName"),
+    lastName: formData.get("lastName"),
     email: formData.get("email"),
     password: formData.get("password"),
   });
@@ -43,7 +45,13 @@ export async function signUpWithInvite(_prev: SignupState, formData: FormData): 
 
   const [created] = await db
     .insert(users)
-    .values({ name: parsed.data.name, email, role: "athlete", passwordHash })
+    .values({
+      firstName: parsed.data.firstName.trim(),
+      lastName: parsed.data.lastName.trim(),
+      email,
+      role: "athlete",
+      passwordHash,
+    })
     .returning();
 
   if (!created) return { error: "No se pudo crear la cuenta." };

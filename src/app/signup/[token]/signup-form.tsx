@@ -12,7 +12,8 @@ export function SignupForm({ token }: { token: string }) {
       <Stack gap="sm">
         <input type="hidden" name="token" value={token} />
         {state?.error ? <Alert color="red">{state.error}</Alert> : null}
-        <TextInput name="name" label="Nombre" autoComplete="name" required size="md" />
+        <TextInput name="firstName" label="Nombre" autoComplete="given-name" required size="md" />
+        <TextInput name="lastName" label="Apellidos" autoComplete="family-name" required size="md" />
         <TextInput name="email" label="Email" type="email" autoComplete="email" required size="md" />
         <PasswordInput
           name="password"

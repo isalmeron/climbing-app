@@ -29,9 +29,12 @@ export const demoTypeEnum = pgEnum("demo_type", ["upload", "embed"]);
 /* Auth.js                                                             */
 /* ------------------------------------------------------------------ */
 
+/** `name` is Auth.js's mirror of the OAuth profile; canonical identity is first/last. */
 export const users = pgTable("users", {
   id: uuid("id").primaryKey().defaultRandom(),
   name: text("name"),
+  firstName: text("first_name"),
+  lastName: text("last_name"),
   email: text("email").notNull().unique(),
   emailVerified: timestamp("email_verified", { withTimezone: true }),
   image: text("image"),
@@ -78,6 +81,21 @@ export const verificationTokens = pgTable(
     expires: timestamp("expires", { withTimezone: true }).notNull(),
   },
   (t) => [primaryKey({ columns: [t.identifier, t.token] })],
+);
+
+/** One-time coach setup token: no expiry, one unused per user (revoke/resend). */
+export const coachSetupTokens = pgTable(
+  "coach_setup_tokens",
+  {
+    id: uuid("id").primaryKey().defaultRandom(),
+    token: text("token").notNull().unique(),
+    userId: uuid("user_id")
+      .notNull()
+      .references(() => users.id, { onDelete: "cascade" }),
+    createdAt: timestamp("created_at", { withTimezone: true }).notNull().defaultNow(),
+    usedAt: timestamp("used_at", { withTimezone: true }),
+  },
+  (t) => [index("coach_setup_tokens_user_idx").on(t.userId)],
 );
 
 /* ------------------------------------------------------------------ */

@@ -19,7 +19,7 @@ const passwordHash = await bcrypt.hash(adminPassword, 10);
 
 await db
   .insert(users)
-  .values({ email: adminEmail.toLowerCase(), name: "Admin", role: "admin", passwordHash })
+  .values({ email: adminEmail.toLowerCase(), firstName: "Admin", role: "admin", passwordHash })
   .onConflictDoUpdate({
     target: users.email,
     set: { role: "admin", passwordHash },

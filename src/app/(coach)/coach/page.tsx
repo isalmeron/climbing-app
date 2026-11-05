@@ -4,6 +4,7 @@ import { createInviteLinkForm } from "@/actions/invite";
 import { LinkButton } from "@/components/link-button";
 import { db } from "@/db";
 import { athleteCoach, planAssignments, trainingPlans, users } from "@/db/schema";
+import { displayName } from "@/lib/name";
 import { requireRole } from "@/lib/session";
 
 export default async function CoachHome() {
@@ -13,6 +14,8 @@ export default async function CoachHome() {
     .select({
       id: users.id,
       name: users.name,
+      firstName: users.firstName,
+      lastName: users.lastName,
       email: users.email,
       planName: trainingPlans.name,
     })
@@ -57,7 +60,7 @@ export default async function CoachHome() {
           {athletes.map((athlete) => (
             <Card key={athlete.id} withBorder radius="md" padding="md">
               <Stack gap={4}>
-                <Text fw={600}>{athlete.name ?? athlete.email}</Text>
+                <Text fw={600}>{displayName(athlete)}</Text>
                 <Text size="sm" c="dimmed">
                   {athlete.email}
                 </Text>

@@ -1,6 +1,7 @@
 import { AppShell, AppShellHeader, AppShellMain, Button, Container, Group, Text } from "@mantine/core";
 import { logout } from "@/actions/auth";
 import { LinkButton } from "@/components/link-button";
+import { displayName } from "@/lib/name";
 import { requireRole } from "@/lib/session";
 
 export default async function AthleteLayout({ children }: { children: React.ReactNode }) {
@@ -12,7 +13,7 @@ export default async function AthleteLayout({ children }: { children: React.Reac
         <Container h="100%" size="md">
           <Group h="100%" justify="space-between" wrap="nowrap">
             <Text fw={600} truncate>
-              {athlete.name ?? "Mi entrenamiento"}
+              {displayName(athlete)}
             </Text>
             <Group gap="xs" wrap="nowrap">
               <LinkButton href="/athlete/profile" variant="subtle" size="compact-sm">
