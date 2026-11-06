@@ -39,9 +39,14 @@ export default async function AdminQueue() {
   return (
     <Stack gap="lg">
       <Stack gap={2}>
-        <Title order={1} size="h2">
-          Cola de revisión
-        </Title>
+        <Group justify="space-between" align="flex-end" wrap="nowrap">
+          <Title order={1} size="h2">
+            Cola de revisión
+          </Title>
+          <LinkButton href="/admin/catalog" variant="subtle" size="compact-sm">
+            Ver catálogo
+          </LinkButton>
+        </Group>
         <Text c="dimmed" size="sm">
           Los borradores de los entrenadores aparecen aquí hasta que los aceptes.
         </Text>
