@@ -32,7 +32,7 @@ export async function acceptDraft(exerciseId: string, patch: z.infer<typeof acce
     })
     .where(eq(exercises.id, exerciseId));
 
-  revalidatePath("/admin/exercises");
+  revalidatePath("/admin");
   revalidatePath("/coach/exercises");
 }
 

@@ -1,8 +1,10 @@
 import { Badge, Button, Card, Divider, Group, Stack, Text, TextInput, Title } from "@mantine/core";
 import { asc, eq } from "drizzle-orm";
+import Link from "next/link";
 import { acceptDraft } from "@/actions/catalog";
 import { inviteCoach, resendCoachInvite, revokeCoachInvite } from "@/actions/coaches";
 import { rejectDraft } from "@/actions/exercises";
+import { LinkButton } from "@/components/link-button";
 import { db } from "@/db";
 import { exercises, users } from "@/db/schema";
 import { displayName } from "@/lib/name";
@@ -54,13 +56,17 @@ export default async function AdminQueue() {
           {drafts.map((draft) => (
             <Card key={draft.id} withBorder radius="md" padding="md">
               <Stack gap="xs">
-                <Group justify="space-between">
-                  <Text fw={600}>{draft.name}</Text>
-                  <Text size="xs" c="dimmed">
-                    {draft.author ?? draft.authorEmail ?? "Admin"}
+                <Link href={`/admin/exercises/${draft.id}`} style={{ textDecoration: "none", color: "inherit" }}>
+                  <Group justify="space-between" wrap="nowrap">
+                    <Text fw={600}>{draft.name}</Text>
+                    <Text size="xs" c="dimmed">
+                      {draft.author ?? draft.authorEmail ?? "Admin"}
+                    </Text>
+                  </Group>
+                  <Text size="sm" c="dimmed" lineClamp={4}>
+                    {draft.description}
                   </Text>
-                </Group>
-                <Text size="sm">{draft.description}</Text>
+                </Link>
                 <Group gap="xs">
                   <form action={acceptDraft.bind(null, draft.id, {})}>
                     <Button type="submit" size="compact-md">
@@ -72,6 +78,9 @@ export default async function AdminQueue() {
                       Rechazar
                     </Button>
                   </form>
+                  <LinkButton href={`/admin/exercises/${draft.id}`} variant="subtle" size="compact-md">
+                    Editar
+                  </LinkButton>
                 </Group>
               </Stack>
             </Card>
