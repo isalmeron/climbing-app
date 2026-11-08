@@ -63,6 +63,17 @@ export const { handlers, auth, signIn, signOut, unstable_update } = NextAuth({
     }),
   ],
   callbacks: {
+    async signIn({ user, account }) {
+      // Credentials rejects deactivated users in `authorize`; a linked OAuth
+      // account would bypass that check, so it is repeated here.
+      if (account?.provider === "credentials" || !user.id) return true;
+      const [row] = await db
+        .select({ deactivatedAt: users.deactivatedAt })
+        .from(users)
+        .where(eq(users.id, user.id))
+        .limit(1);
+      return !row?.deactivatedAt;
+    },
     async jwt({ token, user, trigger, session }) {
       if (user?.id) {
         token.uid = user.id;

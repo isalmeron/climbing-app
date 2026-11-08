@@ -58,3 +58,13 @@ Define tu contraseña aquí:
 
 ${setupUrl}`;
 }
+
+export function coachPasswordResetEmail(setupUrl: string): Mail["text"] {
+  return `Se ha solicitado restablecer tu contraseña.
+
+Define una nueva aquí:
+
+${setupUrl}
+
+El enlace solo puede usarse una vez.`;
+}

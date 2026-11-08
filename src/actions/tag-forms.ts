@@ -14,7 +14,6 @@ export async function createTagFromForm(formData: FormData): Promise<void> {
 
 export async function updateTagFromForm(id: string, formData: FormData): Promise<void> {
   await updateTag(id, {
-    key: String(formData.get("key") ?? "").trim(),
     labelEs: String(formData.get("labelEs") ?? "").trim(),
     sort: Number(formData.get("sort") ?? 0),
   });
