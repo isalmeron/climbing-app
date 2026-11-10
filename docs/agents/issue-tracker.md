@@ -11,10 +11,20 @@ climbing teamspace. Use the Notion MCP tools for every operation — there is no
 - Data source id: `a9d97991-9883-42db-9149-4b23a1638b96`
 - Database URL: https://app.notion.com/p/a1bdd9e9d16d4ba0a100d10c75e184d8
 - Statuses: `Not started` → `In progress` → `Done`
-- **Epic**: groups issues by purpose (the app itself is the project; epics are
-  its bodies of work). Known values: `Deployment`, `Exercises` (canonical spelling — never "Excercises"). Every new issue gets an
-  Epic; use the exact value — no variants of case or wording. (It is currently
-  a text property; if it becomes a Select, values carry over.)
+- **Epic**: a **relation** to the **Epics** database (data source
+  `40eaca7a-dc68-80ec-9aef-000b8b4dd219`), not a text property. Every new issue
+  gets an Epic. Known epics (canonical page URLs — pass these in the `Epic`
+  property as a URL array when creating issues):
+  - **Admin** — admin-performed work: coach invites, exercise curation, user
+    management. https://app.notion.com/40eaca7adc6880309030fc5b4f827810
+  - **Coach** — coach-facing product work.
+    https://app.notion.com/40eaca7adc688031a3a8d4e61f508cf8
+  - **Deployment** — infra and go-live.
+    https://app.notion.com/40eaca7adc688071a3efd741752ac374
+    History note: the former text epic `Exercises` was converted into the
+    **Admin** relation epic (its issues were migrated). Don't recreate it.
+    Creating an issue with `"Epic": "Admin"` (a plain string) fails validation —
+    always use the URL array form.
 
 ## Conventions
 

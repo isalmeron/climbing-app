@@ -2,6 +2,7 @@
 
 import { and, eq, isNull } from "drizzle-orm";
 import { revalidatePath } from "next/cache";
+import { z } from "zod";
 import { db } from "@/db";
 import { athleteCoach, planAssignments, trainingPlans } from "@/db/schema";
 import { canTransferAthlete } from "@/lib/permissions";
@@ -52,4 +53,19 @@ export async function transferAthlete(athleteId: string, newCoachId: string): Pr
 
   revalidatePath("/coach/athletes");
   revalidatePath("/admin");
+  revalidatePath("/admin/athletes");
+}
+
+const transferFormSchema = z.object({
+  athleteId: z.string().uuid(),
+  coachId: z.string().uuid(),
+});
+
+/** Admin UI wrapper: reads the coach picker from the transfer form. */
+export async function transferAthleteFromForm(formData: FormData): Promise<void> {
+  const data = transferFormSchema.parse({
+    athleteId: formData.get("athleteId"),
+    coachId: formData.get("coachId"),
+  });
+  await transferAthlete(data.athleteId, data.coachId);
 }

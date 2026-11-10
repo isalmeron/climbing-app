@@ -16,6 +16,12 @@ export default async function AdminLayout({ children }: { children: React.ReactN
               <LinkButton href="/admin" variant="subtle" size="compact-sm">
                 Cola
               </LinkButton>
+              <LinkButton href="/admin/athletes" variant="subtle" size="compact-sm">
+                Atletas
+              </LinkButton>
+              <LinkButton href="/admin/catalog" variant="subtle" size="compact-sm">
+                Catálogo
+              </LinkButton>
               <LinkButton href="/admin/tags" variant="subtle" size="compact-sm">
                 Etiquetas
               </LinkButton>

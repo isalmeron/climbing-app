@@ -7,7 +7,8 @@ import { z } from "zod";
 import { db } from "@/db";
 import { coachSetupTokens, users } from "@/db/schema";
 import { signIn, unstable_update } from "@/lib/auth";
-import { coachSetupEmail, mailer } from "@/lib/mailer";
+import { coachPasswordResetEmail, coachSetupEmail, mailer } from "@/lib/mailer";
+import { canResetCoachPassword } from "@/lib/permissions";
 import { requireRoleAction } from "@/lib/session";
 import { newInviteToken } from "@/lib/token";
 
@@ -67,6 +68,28 @@ export async function resendCoachInvite(coachId: string): Promise<void> {
 export async function revokeCoachInvite(coachId: string): Promise<void> {
   await requireRoleAction("admin");
   await db.delete(coachSetupTokens).where(and(eq(coachSetupTokens.userId, coachId), isNull(coachSetupTokens.usedAt)));
+  revalidatePath("/admin");
+}
+
+/**
+ * Password reset for an ACTIVE, set-up coach: issues a fresh single-use setup
+ * token (invalidating any unused one, same as resendCoachInvite). v1 decision:
+ * JWT sessions are NOT invalidated — the coach's current session stays valid
+ * until expiry; a session-version check would be the heavier alternative.
+ */
+export async function resetCoachPassword(coachId: string): Promise<void> {
+  await requireRoleAction("admin");
+
+  const [coach] = await db.select().from(users).where(eq(users.id, coachId)).limit(1);
+  if (!coach || !canResetCoachPassword(coach, { role: "admin" })) throw new Error("No es un entrenador activo");
+
+  const token = await issueSetupToken(coach.id);
+  await mailer().send({
+    to: coach.email,
+    subject: "Restablecer contraseña",
+    text: coachPasswordResetEmail(`${process.env.APP_URL ?? ""}/coach-setup/${token}`),
+  });
+
   revalidatePath("/admin");
 }
 

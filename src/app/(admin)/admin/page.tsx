@@ -1,13 +1,22 @@
 import { Badge, Button, Card, Divider, Group, Stack, Text, TextInput, Title } from "@mantine/core";
-import { asc, eq } from "drizzle-orm";
+import { and, asc, eq, isNull } from "drizzle-orm";
+import Link from "next/link";
 import { acceptDraft } from "@/actions/catalog";
-import { inviteCoach, resendCoachInvite, revokeCoachInvite } from "@/actions/coaches";
+import { inviteCoach, resendCoachInvite, resetCoachPassword, revokeCoachInvite } from "@/actions/coaches";
 import { rejectDraft } from "@/actions/exercises";
+import { setUserActive } from "@/actions/users";
+import { LinkButton } from "@/components/link-button";
 import { db } from "@/db";
 import { exercises, users } from "@/db/schema";
 import { displayName } from "@/lib/name";
 
-export default async function AdminQueue() {
+export default async function AdminQueue({
+  searchParams,
+}: {
+  searchParams: Promise<Record<string, string | string[] | undefined>>;
+}) {
+  const showDeactivated = (await searchParams).deactivated === "1";
+
   const [drafts, coaches] = await Promise.all([
     db
       .select({
@@ -28,18 +37,24 @@ export default async function AdminQueue() {
         lastName: users.lastName,
         name: users.name,
         passwordHash: users.passwordHash,
+        deactivatedAt: users.deactivatedAt,
       })
       .from(users)
-      .where(eq(users.role, "coach"))
+      .where(showDeactivated ? eq(users.role, "coach") : and(eq(users.role, "coach"), isNull(users.deactivatedAt)))
       .orderBy(asc(users.createdAt)),
   ]);
 
   return (
     <Stack gap="lg">
       <Stack gap={2}>
-        <Title order={1} size="h2">
-          Cola de revisión
-        </Title>
+        <Group justify="space-between" align="flex-end" wrap="nowrap">
+          <Title order={1} size="h2">
+            Cola de revisión
+          </Title>
+          <LinkButton href="/admin/catalog" variant="subtle" size="compact-sm">
+            Ver catálogo
+          </LinkButton>
+        </Group>
         <Text c="dimmed" size="sm">
           Los borradores de los entrenadores aparecen aquí hasta que los aceptes.
         </Text>
@@ -54,13 +69,17 @@ export default async function AdminQueue() {
           {drafts.map((draft) => (
             <Card key={draft.id} withBorder radius="md" padding="md">
               <Stack gap="xs">
-                <Group justify="space-between">
-                  <Text fw={600}>{draft.name}</Text>
-                  <Text size="xs" c="dimmed">
-                    {draft.author ?? draft.authorEmail ?? "Admin"}
+                <Link href={`/admin/exercises/${draft.id}`} style={{ textDecoration: "none", color: "inherit" }}>
+                  <Group justify="space-between" wrap="nowrap">
+                    <Text fw={600}>{draft.name}</Text>
+                    <Text size="xs" c="dimmed">
+                      {draft.author ?? draft.authorEmail ?? "Admin"}
+                    </Text>
+                  </Group>
+                  <Text size="sm" c="dimmed" lineClamp={4}>
+                    {draft.description}
                   </Text>
-                </Group>
-                <Text size="sm">{draft.description}</Text>
+                </Link>
                 <Group gap="xs">
                   <form action={acceptDraft.bind(null, draft.id, {})}>
                     <Button type="submit" size="compact-md">
@@ -72,6 +91,9 @@ export default async function AdminQueue() {
                       Rechazar
                     </Button>
                   </form>
+                  <LinkButton href={`/admin/exercises/${draft.id}`} variant="subtle" size="compact-md">
+                    Editar
+                  </LinkButton>
                 </Group>
               </Stack>
             </Card>
@@ -83,9 +105,14 @@ export default async function AdminQueue() {
 
       <Stack gap="md">
         <Stack gap={2}>
-          <Title order={2} size="h3">
-            Entrenadores
-          </Title>
+          <Group justify="space-between" align="flex-end" wrap="nowrap">
+            <Title order={2} size="h3">
+              Entrenadores
+            </Title>
+            <LinkButton href={showDeactivated ? "/admin" : "/admin?deactivated=1"} variant="subtle" size="compact-sm">
+              {showDeactivated ? "Ver activos" : "Ver desactivados"}
+            </LinkButton>
+          </Group>
           <Text c="dimmed" size="sm">
             Invita por email: recibirán un enlace de un solo uso para crear su contraseña.
           </Text>
@@ -117,6 +144,7 @@ export default async function AdminQueue() {
           ) : (
             coaches.map((coach) => {
               const pending = !coach.passwordHash;
+              const deactivated = !!coach.deactivatedAt;
               return (
                 <Card key={coach.id} withBorder radius="md" padding="md">
                   <Group justify="space-between" wrap="nowrap">
@@ -127,7 +155,11 @@ export default async function AdminQueue() {
                       </Text>
                     </Stack>
                     <Group gap="xs" wrap="nowrap">
-                      {pending ? (
+                      {deactivated ? (
+                        <Badge variant="light" color="gray">
+                          Desactivado
+                        </Badge>
+                      ) : pending ? (
                         <Badge variant="light" color="orange">
                           Invitación pendiente
                         </Badge>
@@ -150,6 +182,18 @@ export default async function AdminQueue() {
                           </form>
                         </>
                       ) : null}
+                      {!pending && !deactivated ? (
+                        <form action={resetCoachPassword.bind(null, coach.id)}>
+                          <Button type="submit" variant="subtle" size="compact-sm">
+                            Restablecer contraseña
+                          </Button>
+                        </form>
+                      ) : null}
+                      <form action={setUserActive.bind(null, coach.id, deactivated)}>
+                        <Button type="submit" variant="subtle" size="compact-sm" color={deactivated ? "teal" : "red"}>
+                          {deactivated ? "Reactivar" : "Desactivar"}
+                        </Button>
+                      </form>
                     </Group>
                   </Group>
                 </Card>
