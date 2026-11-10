@@ -57,22 +57,6 @@ export function canTransferAthlete(athlete: { coachId: string | null }, actor: {
   return actor.role === "admin" || (actor.role === "coach" && athlete.coachId === actor.id);
 }
 
-/** Deactivation is admin-only, and nobody deactivates themselves. */
-export function canDeactivateUser(target: { id: string }, actor: { id: string; role: Role }): boolean {
-  return actor.role === "admin" && target.id !== actor.id;
-}
-
-/**
- * Password reset reuses the setup-token flow, so it only applies to a coach
- * who already finished setup (has a password) and is still active.
- */
-export function canResetCoachPassword(
-  target: { role: Role; deactivatedAt: Date | null; passwordHash: string | null },
-  actor: { role: Role },
-): boolean {
-  return actor.role === "admin" && target.role === "coach" && !target.deactivatedAt && !!target.passwordHash;
-}
-
 /** Completion only, and only for the athlete the plan was assigned to. */
 export function canCompleteSession(sessionAthleteId: string, actor: { id: string; role: Role }): boolean {
   return actor.role === "athlete" && actor.id === sessionAthleteId;

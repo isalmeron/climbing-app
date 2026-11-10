@@ -5,16 +5,15 @@ import { revalidatePath } from "next/cache";
 import { z } from "zod";
 import { db } from "@/db";
 import { exercises, exerciseTags } from "@/db/schema";
-import { validateDemoInput } from "@/lib/demo";
 import { canEditExercise, canReviewDrafts } from "@/lib/permissions";
 import { requireRoleAction } from "@/lib/session";
 
 const draftSchema = z.object({
   name: z.string().min(2).max(120),
   description: z.string().min(5).max(4000),
-  demoType: z.enum(["upload", "embed"]).nullish(),
-  demoUrl: z.string().url().nullish(),
-  demoKey: z.string().nullish(),
+  demoType: z.enum(["upload", "embed"]).optional(),
+  demoUrl: z.string().url().optional(),
+  demoKey: z.string().optional(),
   tagIds: z.array(z.string().uuid()).default([]),
 });
 
@@ -50,8 +49,6 @@ export async function createExerciseDraft(input: ExerciseInput): Promise<{ id: s
 export async function updateExercise(exerciseId: string, input: ExerciseInput): Promise<void> {
   const user = await requireRoleAction(["coach", "admin"]);
   const data = draftSchema.parse(input);
-  const demoError = validateDemoInput(data);
-  if (demoError) throw new Error(demoError);
 
   const [exercise] = await db.select().from(exercises).where(eq(exercises.id, exerciseId));
   if (!exercise) throw new Error("El ejercicio no existe");
@@ -74,7 +71,7 @@ export async function updateExercise(exerciseId: string, input: ExerciseInput): 
     await db.insert(exerciseTags).values(data.tagIds.map((tagId) => ({ exerciseId, tagId })));
   }
   revalidatePath("/coach/exercises");
-  revalidatePath("/admin");
+  revalidatePath("/admin/exercises");
 }
 
 /** Rejected drafts are removed — accepted exercises never are. */
@@ -87,5 +84,5 @@ export async function rejectDraft(exerciseId: string): Promise<void> {
     throw new Error("Un ejercicio aceptado no se puede borrar");
   }
   await db.delete(exercises).where(and(eq(exercises.id, exerciseId), eq(exercises.status, "draft")));
-  revalidatePath("/admin");
+  revalidatePath("/admin/exercises");
 }

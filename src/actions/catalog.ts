@@ -32,7 +32,7 @@ export async function acceptDraft(exerciseId: string, patch: z.infer<typeof acce
     })
     .where(eq(exercises.id, exerciseId));
 
-  revalidatePath("/admin");
+  revalidatePath("/admin/exercises");
   revalidatePath("/coach/exercises");
 }
 
@@ -53,12 +53,9 @@ export async function createTag(input: z.infer<typeof tagSchema>): Promise<void>
   revalidatePath("/admin/tags");
 }
 
-const tagUpdateSchema = tagSchema.omit({ key: true });
-
-/** The key is a stable reference once created — only label and sort are editable. */
-export async function updateTag(id: string, input: z.infer<typeof tagUpdateSchema>): Promise<void> {
+export async function updateTag(id: string, input: z.infer<typeof tagSchema>): Promise<void> {
   await requireRoleAction("admin");
-  const data = tagUpdateSchema.parse(input);
+  const data = tagSchema.parse(input);
   await db.update(tags).set(data).where(eq(tags.id, id));
   revalidatePath("/admin/tags");
 }

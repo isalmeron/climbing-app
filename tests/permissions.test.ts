@@ -1,11 +1,9 @@
 import { describe, expect, it } from "vitest";
 import {
   canCompleteSession,
-  canDeactivateUser,
   canDeletePlan,
   canEditExercise,
   canManagePlan,
-  canResetCoachPassword,
   canTransferAthlete,
   canViewAthlete,
 } from "@/lib/permissions";
@@ -74,36 +72,6 @@ describe("athlete visibility and transfer", () => {
     expect(canTransferAthlete(linked, coach)).toBe(true);
     expect(canTransferAthlete(linked, otherCoach)).toBe(false);
     expect(canTransferAthlete(linked, admin)).toBe(true);
-  });
-});
-
-describe("user management", () => {
-  it("lets the admin deactivate anyone but themselves", () => {
-    expect(canDeactivateUser({ id: coach.id }, admin)).toBe(true);
-    expect(canDeactivateUser({ id: admin.id }, admin)).toBe(false);
-  });
-
-  it("refuses deactivation to coaches and athletes", () => {
-    expect(canDeactivateUser({ id: athlete.id }, coach)).toBe(false);
-    expect(canDeactivateUser({ id: athlete.id }, athlete)).toBe(false);
-  });
-
-  it("resets passwords for active, set-up coaches only", () => {
-    const active = { role: "coach" as const, deactivatedAt: null, passwordHash: "hash" };
-    expect(canResetCoachPassword(active, admin)).toBe(true);
-    expect(canResetCoachPassword(active, coach)).toBe(false);
-  });
-
-  it("refuses password reset for deactivated or pending coaches", () => {
-    const adminActor = { role: "admin" as const };
-    expect(canResetCoachPassword({ role: "coach", deactivatedAt: new Date(), passwordHash: "hash" }, adminActor)).toBe(
-      false,
-    );
-    expect(canResetCoachPassword({ role: "coach", deactivatedAt: null, passwordHash: null }, adminActor)).toBe(false);
-  });
-
-  it("never treats a non-coach as a password-reset target", () => {
-    expect(canResetCoachPassword({ role: "athlete", deactivatedAt: null, passwordHash: "hash" }, admin)).toBe(false);
   });
 });
 

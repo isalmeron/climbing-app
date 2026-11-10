@@ -7,6 +7,8 @@ import { requireRole } from "@/lib/session";
 
 export default async function CoachLayout({ children }: { children: React.ReactNode }) {
   const coach = await requireRole("coach");
+  // Mandatory onboarding: no coach home until first+last name are set.
+  if (!coach.firstName || !coach.lastName) redirect("/coach/onboarding");
 
   return (
     <AppShell header={{ height: 56 }} padding="md">

@@ -1,6 +1,6 @@
-import { Button, Card, Group, NumberInput, Stack, Text, TextInput, Title } from "@mantine/core";
+import { Button, Card, Group, Stack, Text, TextInput, Title } from "@mantine/core";
 import { asc } from "drizzle-orm";
-import { createTagFromForm, updateTagFromForm } from "@/actions/tag-forms";
+import { createTagFromForm } from "@/actions/tag-forms";
 import { db } from "@/db";
 import { tags } from "@/db/schema";
 
@@ -14,7 +14,7 @@ export default async function TagsPage() {
           Etiquetas
         </Title>
         <Text c="dimmed" size="sm">
-          Vocabulario fijo. La clave es neutra (inglés) y no se puede cambiar; la etiqueta es lo que ve el usuario.
+          Vocabulario fijo. La clave es neutra (inglés) y la etiqueta es lo que ve el usuario.
         </Text>
       </Stack>
 
@@ -32,25 +32,12 @@ export default async function TagsPage() {
 
       <Stack gap="xs">
         {rows.map((tag) => (
-          <Card key={tag.id} withBorder radius="md" padding="md">
-            <form action={updateTagFromForm.bind(null, tag.id)}>
-              <Group align="flex-end" gap="sm" wrap="nowrap">
-                <Stack gap={2} style={{ minWidth: 140 }}>
-                  <Text size="xs" c="dimmed">
-                    Clave
-                  </Text>
-                  <Text size="sm" ff="mono">
-                    {tag.key}
-                  </Text>
-                </Stack>
-                <TextInput name="labelEs" label="Etiqueta" defaultValue={tag.labelEs} required style={{ flex: 1 }} />
-                <NumberInput name="sort" label="Orden" defaultValue={tag.sort} min={0} w={110} />
-                <Button type="submit" size="sm">
-                  Guardar
-                </Button>
-              </Group>
-            </form>
-          </Card>
+          <Group key={tag.id} justify="space-between">
+            <Text>{tag.labelEs}</Text>
+            <Text size="xs" c="dimmed">
+              {tag.key}
+            </Text>
+          </Group>
         ))}
       </Stack>
     </Stack>
