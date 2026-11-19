@@ -1,4 +1,4 @@
-import { SESClient, SendEmailCommand } from "@aws-sdk/client-ses";
+import { Resend } from "resend";
 import { env } from "@/lib/env";
 
 export type Mail = { to: string; subject: string; text: string; html?: string };
@@ -12,32 +12,29 @@ export const consoleMailer: Mailer = {
   },
 };
 
-function sesMailer(): Mailer {
-  const { AWS_REGION, SES_FROM } = env();
-  if (!SES_FROM) throw new Error("SES_FROM is not set");
-  const client = new SESClient({ region: AWS_REGION });
+function resendMailer(): Mailer {
+  const { RESEND_API_KEY, MAIL_FROM } = env();
+  if (!RESEND_API_KEY) throw new Error("RESEND_API_KEY is not set");
+  if (!MAIL_FROM) throw new Error("MAIL_FROM is not set");
+  const client = new Resend(RESEND_API_KEY);
 
   return {
     async send(mail) {
-      await client.send(
-        new SendEmailCommand({
-          Source: SES_FROM,
-          Destination: { ToAddresses: [mail.to] },
-          Message: {
-            Subject: { Data: mail.subject, Charset: "UTF-8" },
-            Body: {
-              Text: { Data: mail.text, Charset: "UTF-8" },
-              ...(mail.html ? { Html: { Data: mail.html, Charset: "UTF-8" } } : {}),
-            },
-          },
-        }),
-      );
+      const { data, error } = await client.emails.send({
+        from: MAIL_FROM,
+        to: mail.to,
+        subject: mail.subject,
+        text: mail.text,
+        ...(mail.html ? { html: mail.html } : {}),
+      });
+      if (error) throw new Error(`Resend send failed: ${error.message}`);
+      console.info(`[mail] sent id=${data?.id} to=${mail.to}`);
     },
   };
 }
 
 export function mailer(): Mailer {
-  return env().MAIL_TRANSPORT === "ses" ? sesMailer() : consoleMailer;
+  return env().MAIL_TRANSPORT === "resend" ? resendMailer() : consoleMailer;
 }
 
 /** All user-facing copy is Spanish (ADR 0005). */

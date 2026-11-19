@@ -7,8 +7,8 @@ import Facebook from "next-auth/providers/facebook";
 import Google from "next-auth/providers/google";
 import { z } from "zod";
 import { db } from "@/db";
-import { accounts, type roleEnum, sessions, users, verificationTokens } from "@/db/schema";
-import { splitFullName } from "@/lib/name";
+import { accounts, sessions, users, verificationTokens } from "@/db/schema";
+import { authCallbacks } from "@/lib/auth-callbacks";
 
 const credentialsSchema = z.object({
   email: z.string().email(),
@@ -62,55 +62,5 @@ export const { handlers, auth, signIn, signOut, unstable_update } = NextAuth({
       },
     }),
   ],
-  callbacks: {
-    async signIn({ user, account }) {
-      // Credentials rejects deactivated users in `authorize`; a linked OAuth
-      // account would bypass that check, so it is repeated here.
-      if (account?.provider === "credentials" || !user.id) return true;
-      const [row] = await db
-        .select({ deactivatedAt: users.deactivatedAt })
-        .from(users)
-        .where(eq(users.id, user.id))
-        .limit(1);
-      return !row?.deactivatedAt;
-    },
-    async jwt({ token, user, trigger, session }) {
-      if (user?.id) {
-        token.uid = user.id;
-        token.role = (user as { role?: (typeof roleEnum.enumValues)[number] }).role ?? "athlete";
-
-        // Canonical split names from our row; OAuth profiles only carry a full
-        // name, so split it here and let the adapter's `name` stay as fallback.
-        const [row] = await db
-          .select({ firstName: users.firstName, lastName: users.lastName })
-          .from(users)
-          .where(eq(users.id, user.id))
-          .limit(1);
-        const names = row?.firstName
-          ? { firstName: row.firstName, lastName: row.lastName }
-          : splitFullName(token.name ?? user.name);
-        token.firstName = names.firstName;
-        token.lastName = names.lastName;
-      }
-
-      // Server Actions mutate the user row; without this the JWT would keep
-      // its sign-in snapshot until the next login.
-      if (trigger === "update" && session) {
-        const patch = session as {
-          firstName?: string | null;
-          lastName?: string | null;
-        };
-        if (patch.firstName !== undefined) token.firstName = patch.firstName;
-        if (patch.lastName !== undefined) token.lastName = patch.lastName;
-      }
-      return token;
-    },
-    async session({ session, token }) {
-      if (token.uid) session.user.id = token.uid as string;
-      if (token.role) session.user.role = token.role as typeof session.user.role;
-      session.user.firstName = (token.firstName as string | null | undefined) ?? null;
-      session.user.lastName = (token.lastName as string | null | undefined) ?? null;
-      return session;
-    },
-  },
+  callbacks: authCallbacks,
 });

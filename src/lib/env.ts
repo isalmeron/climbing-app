@@ -22,9 +22,11 @@ const schema = z.object({
    *  a missing prefix must fail loudly rather than mix environments. */
   S3_PREFIX: z.string().min(1),
 
-  SES_FROM: z.string().email().optional(),
-  /** Where invite/reset links point when running locally. */
-  MAIL_TRANSPORT: z.enum(["console", "ses"]).default("console"),
+  /** `Name <addr>` or a bare address; must belong to a verified Resend domain. */
+  MAIL_FROM: z.string().min(1).optional(),
+  RESEND_API_KEY: z.string().min(1).optional(),
+  /** `console` = print mails to stdout (local dev), `resend` = send for real. */
+  MAIL_TRANSPORT: z.enum(["console", "resend"]).default("console"),
 
   BOOTSTRAP_ADMIN_EMAIL: z.string().email().optional(),
   BOOTSTRAP_ADMIN_PASSWORD: z.string().min(8).optional(),

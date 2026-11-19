@@ -2,6 +2,7 @@
  * Seeds the bootstrap admin (ADR 0005), the tag vocabulary, and a starter
  * catalog so a coach can compose a first plan at cold start (ADR 0003).
  */
+
 import bcrypt from "bcryptjs";
 import { eq } from "drizzle-orm";
 import { db } from "@/db";
